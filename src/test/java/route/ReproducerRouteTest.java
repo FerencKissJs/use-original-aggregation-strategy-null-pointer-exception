@@ -20,16 +20,22 @@ class ReproducerRouteTest {
 
     @Test
     void recipientList_shouldThrowRuntimeExceptionFromReproducer1() {
-        CamelExecutionException ex = assertThrows(
+        CamelExecutionException exceptionGood = assertThrows(
             CamelExecutionException.class,
-      //      () -> producerTemplate.requestBody("direct:reproducer", "Bar Foo")
             () -> producerTemplate.requestBody("direct:customAggregatorOk", "Bar Foo")
         );
 
-        log.info("", ex.getCause());
-        // Camel wraps the underlying exception; verify the real cause + message
-        assertNotNull(ex.getCause());
-        assertInstanceOf(RuntimeException.class, ex.getCause());
-        assertEquals("reproducer1", ex.getCause().getMessage());
+        CamelExecutionException exceptionWrong = assertThrows(
+            CamelExecutionException.class,
+            () -> producerTemplate.requestBody("direct:reproducer", "Bar Foo")
+        );
+
+        assertNotNull(exceptionGood.getCause());
+        assertInstanceOf(RuntimeException.class, exceptionGood.getCause());
+        assertEquals("reproducer1", exceptionGood.getCause().getMessage());
+        log.info("The wrong exception :", exceptionWrong.getCause());
+        assertNotNull(exceptionWrong.getCause());
+        assertInstanceOf(RuntimeException.class, exceptionWrong.getCause());
+        assertEquals("reproducer1", exceptionWrong.getCause().getMessage());
     }
 }
